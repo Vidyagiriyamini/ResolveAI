@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Local databases and SQLite files
+resolveai.db
+resolveai.db-shm
+resolveai.db-wal
+
+# Build output
+dist/
+coverage/
+
+# Logs
+logs/
+*.log
+npm-debug.log*

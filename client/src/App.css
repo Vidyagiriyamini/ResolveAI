@@ -1,0 +1,367 @@
+
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap");
+
+:root {
+  font-family: "DM Sans", sans-serif;
+  color: #182230;
+  background: #f5f7fb;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-optical-sizing: auto;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button, a {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.topbar {
+  height: 76px;
+  padding: 0 8%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-bottom: 1px solid #e9edf3;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-decoration: none;
+  color: #172033;
+  font-family: "Manrope", sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.brand-icon {
+  width: 37px;
+  height: 37px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  color: white;
+  background: #3657d5;
+}
+
+.brand-accent {
+  color: #3657d5;
+}
+
+.sandbox-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #526174;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f3f6fa;
+  padding: 9px 13px;
+  border-radius: 30px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d99526;
+}
+
+.main-content {
+  max-width: 1050px;
+  padding: 66px 24px 28px;
+  margin: 0 auto;
+}
+
+.intro {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.eyebrow, .muted-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #6c7a91;
+}
+
+.eyebrow {
+  color: #3657d5;
+  margin-bottom: 18px;
+}
+
+h1, h2, p {
+  margin-top: 0;
+}
+
+h1 {
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(29px, 4vw, 43px);
+  line-height: 1.2;
+  letter-spacing: -1.7px;
+  margin-bottom: 16px;
+}
+
+h1 span {
+  color: #3657d5;
+}
+
+.intro-copy {
+  max-width: 580px;
+  margin: 0 auto;
+  color: #68758a;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.checkout-card {
+  max-width: 530px;
+  margin: 0 auto;
+  padding: 28px;
+  border: 1px solid #e6eaf1;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 15px 50px rgba(35, 50, 85, 0.07);
+}
+
+.card-heading, .product-row, .total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-heading h2 {
+  font-family: "Manrope", sans-serif;
+  font-size: 20px;
+  margin: 8px 0 0;
+}
+
+.muted-label {
+  margin-bottom: 0;
+}
+
+.order-icon {
+  width: 37px;
+  height: 37px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  background: #f0f3ff;
+  color: #3657d5;
+  font-size: 21px;
+}
+
+.product-row {
+  gap: 12px;
+  padding: 23px 0;
+  margin-top: 23px;
+  border-top: 1px solid #edf0f5;
+  border-bottom: 1px solid #edf0f5;
+  font-size: 13px;
+}
+
+.product-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #eef1ff;
+  color: #3657d5;
+  font-size: 22px;
+}
+
+.product-details {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.product-details span, .paypal-placeholder span:not(.paypal-mark),
+.helper-text {
+  color: #778398;
+  font-size: 11px;
+}
+
+.total-row {
+  padding: 19px 0 24px;
+  font-size: 14px;
+}
+
+.total-row strong {
+  font-size: 17px;
+}
+
+.payment-section {
+  border-top: 1px solid #edf0f5;
+  padding-top: 23px;
+}
+
+.paypal-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 13px 0 18px;
+  padding: 14px;
+  border: 1px solid #e1e6ef;
+  border-radius: 12px;
+}
+
+.paypal-mark {
+  font-size: 24px;
+  font-weight: 800;
+  font-style: italic;
+  color: #1268b3;
+}
+
+.paypal-placeholder div {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.secure-label {
+  color: #18825a;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.pay-button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px;
+  border: 0;
+  border-radius: 11px;
+  background: #244bc5;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.pay-button:hover:not(:disabled) {
+  background: #193ca8;
+  transform: translateY(-1px);
+}
+
+.pay-button:disabled {
+  cursor: default;
+  opacity: 0.85;
+}
+
+.helper-text {
+  text-align: center;
+  margin: 13px 0 0;
+  line-height: 1.6;
+}
+
+.notice {
+  margin: 15px 0 0;
+  padding: 12px;
+  border-radius: 9px;
+  color: #2857a7;
+  background: #edf4ff;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  margin: 45px 0 38px;
+}
+
+.features > div {
+  padding: 0 10px;
+}
+
+.feature-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  background: #e9edff;
+  color: #3657d5;
+  font-size: 19px;
+}
+
+.features strong {
+  font-size: 13px;
+}
+
+.features p {
+  margin: 7px 0 0;
+  color: #758196;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+footer {
+  padding: 20px 0 0;
+  border-top: 1px solid #e4e8ef;
+  text-align: center;
+  color: #8590a1;
+  font-size: 11px;
+}
+
+@media (max-width: 600px) {
+  .topbar {
+    height: 66px;
+    padding: 0 18px;
+  }
+
+  .brand {
+    font-size: 19px;
+  }
+
+  .sandbox-badge {
+    font-size: 10px;
+    padding: 8px 10px;
+  }
+
+  .main-content {
+    padding: 44px 17px 24px;
+  }
+
+  .checkout-card {
+    padding: 21px;
+  }
+
+  .features {
+    grid-template-columns: 1fr;
+    gap: 23px;
+    max-width: 300px;
+    margin: 35px auto;
+  }
+
+  .features > div {
+    padding: 0;
+  }
+}
