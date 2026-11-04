@@ -1,4 +1,4 @@
-# Dependencies
+﻿# Dependencies
 node_modules/
 
 # Environment variables and secrets
@@ -19,3 +19,13 @@ coverage/
 logs/
 *.log
 npm-debug.log*
+# ResolveAI local checkpoints and backups
+ResolveAI-checkpoint-*/
+*.db
+*.db-shm
+*.db-wal
+*.backup.*
+*.before-*.js
+client/App.backup.jsx
+
+sync-paypal-payment.js

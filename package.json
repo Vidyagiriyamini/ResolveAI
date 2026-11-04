@@ -1,17 +1,22 @@
 {
-  "name": "test-ai-hackathon",
+  "name": "resolveai",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "AI-assisted payment investigation and reconciliation platform",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prestart": "node database.js && node reconciliation-migration.js && node paypal-webhook-migration.js && node auth-migration.js",
+    "start": "node server.js",
+    "build": "npm run build --prefix client",
+    "test": "node ./ResolveAI-quality-tests/run-tests.js && node ./ResolveAI-quality-tests/run-reconciliation-tests.js && node ./ResolveAI-quality-tests/operator-auth-tests.js && node ./ResolveAI-quality-tests/incident-detection-tests.js && node ./ResolveAI-quality-tests/paypal-webhook-tests.js && node ./ResolveAI-quality-tests/paypal-webhook-migration-tests.js && node ./ResolveAI-quality-tests/paypal-webhook-route-tests.js && node ./ResolveAI-quality-tests/ollama-transport-tests.js"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "better-sqlite3": "11.10.0",
     "dotenv": "^18.0.8",
-    "express": "^5.3.0"
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.2",
+    "helmet": "^8.3.0"
   }
 }

@@ -1,0 +1,635 @@
+
+/* =========================================================
+   RESOLVEAI — RECONCILIATION WORKSPACE
+   Dedicated proposal, approval and execution presentation
+   ========================================================= */
+
+.reconciliation-panel {
+  width: 100%;
+  margin-top: 22px;
+  padding: 28px;
+  border: 1px solid #dfe6f0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 5px 20px rgba(20, 43, 69, 0.055);
+}
+
+.reconciliation-panel > .compact-section-header {
+  align-items: center;
+  padding-bottom: 20px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid #edf0f5;
+}
+
+.reconciliation-panel .compact-section-header h2 {
+  margin: 5px 0 6px;
+  font-size: 22px;
+}
+
+.reconciliation-subtitle {
+  max-width: 620px;
+  color: #758095;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* Proposal overview */
+
+.reconciliation-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.reconciliation-summary > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 8px;
+  min-height: 86px;
+  padding: 15px;
+  border: 1px solid #e7ecf3;
+  border-radius: 11px;
+  background: #f8faff;
+  overflow-wrap: anywhere;
+}
+
+.reconciliation-label {
+  display: block;
+  color: #7b8799;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .55px;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.reconciliation-summary strong {
+  color: #20364e;
+  font-family: 'Manrope', sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.reconciliation-summary .status-pill {
+  margin: 0;
+}
+
+/* Proposed action */
+
+.reconciliation-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 20px 0;
+  padding: 19px;
+  border: 1px solid #dce6fb;
+  border-radius: 12px;
+  background: linear-gradient(120deg, #f5f8ff, #fbfcff);
+}
+
+.reconciliation-action > * {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.reconciliation-action strong {
+  color: #263f61;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.reconciliation-action code {
+  display: inline-block;
+  max-width: 100%;
+  padding: 7px 10px;
+  border: 1px solid #e1e7f0;
+  border-radius: 7px;
+  background: #fff;
+  color: #53657e;
+  font-size: 10px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+/* Approval and execution timeline */
+
+.reconciliation-timeline {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 24px 0;
+}
+
+.reconciliation-timeline-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 11px;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid #e7ecf2;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.reconciliation-timeline-marker {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #e8f7ef;
+  color: #19845f;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.reconciliation-timeline-item strong {
+  display: block;
+  color: #263b53;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.reconciliation-timeline-item p,
+.reconciliation-timeline-item small,
+.reconciliation-timeline-item time {
+  max-width: 100%;
+  margin: 0;
+  color: #748196;
+  font-size: 11px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Simulation safety boundary */
+
+.reconciliation-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  margin: 20px 0;
+  padding: 15px 17px;
+  border: 1px solid #d9eee4;
+  border-radius: 10px;
+  background: #f2faf6;
+  color: #39765c;
+  font-size: 12px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+
+.reconciliation-notice strong {
+  color: #216d4d;
+}
+
+/* Proposal controls */
+
+.reconciliation-controls {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid #edf0f5;
+}
+
+.reconciliation-controls .button {
+  min-width: 120px;
+}
+
+/* Empty and loading states */
+
+.reconciliation-empty {
+  padding: 25px;
+  border: 1px dashed #d9e1ec;
+  border-radius: 12px;
+  background: #f8faff;
+  color: #748196;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* Responsive reconciliation layout */
+
+@media (max-width: 900px) {
+  .reconciliation-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .reconciliation-timeline {
+    grid-template-columns: 1fr;
+  }
+
+  .reconciliation-timeline-item {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .reconciliation-timeline-item > div {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .reconciliation-panel {
+    padding: 18px;
+  }
+
+  .reconciliation-panel > .compact-section-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .reconciliation-summary {
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+  }
+
+  .reconciliation-summary > div {
+    min-height: 78px;
+    padding: 12px;
+  }
+
+  .reconciliation-summary strong {
+    font-size: 13px;
+  }
+
+  .reconciliation-action {
+    padding: 15px;
+  }
+
+  .reconciliation-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .reconciliation-controls .button {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   RESOLVEAI — AI REPORT AND AUDIT REFINEMENTS
+   ========================================================= */
+
+/* Rule-based recommendation transparency */
+
+.compact-guidance-note {
+  margin: 8px 0 14px;
+  color: #748196;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.compact-ai-progress {
+  margin: 12px 0;
+  color: #536b89;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* AI report readability */
+
+.compact-report-text {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.compact-report-text p {
+  margin: 0;
+  color: #536176;
+  font-size: 12px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.compact-report-text p strong,
+.compact-report-text .report-list-item strong {
+  color: #263f61;
+  font-weight: 700;
+}
+
+.report-list-item {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+  color: #536176;
+  font-size: 12px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.report-list-marker {
+  color: #526f9c;
+  font-weight: 700;
+}
+
+/* Audit event count */
+
+.compact-audit-count {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 9px;
+  padding: 3px 8px;
+  border: 1px solid #e2e8f1;
+  border-radius: 20px;
+  color: #68788e;
+  background: #f7f9fc;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Grouped AI audit history */
+
+.compact-audit-ai-group {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid #e7ecf3;
+  border-radius: 10px;
+  background: #f9fbfe;
+}
+
+.compact-audit-ai-group > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.compact-audit-ai-group > summary::-webkit-details-marker {
+  display: none;
+}
+
+.compact-audit-ai-summary {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.compact-audit-ai-group > summary strong {
+  color: #30455f;
+  font-size: 12px;
+}
+
+.compact-audit-ai-group > summary small {
+  color: #7a8799;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.compact-audit-ai-events {
+  margin: 14px 0 0 8px;
+  padding-left: 12px;
+  border-left: 1px solid #dfe6f0;
+}
+
+.compact-audit-ai-events .compact-audit-item {
+  margin-bottom: 12px;
+}
+
+.compact-audit-ai-events .compact-audit-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Mobile refinements */
+
+@media (max-width: 520px) {
+  .compact-audit-count {
+    margin-left: 4px;
+  }
+
+  .compact-audit-ai-group {
+    padding: 10px;
+  }
+
+  .compact-report-text p,
+  .report-list-item {
+    font-size: 11px;
+  }
+}
+
+/* =========================================================
+   RESOLVEAI — OPERATOR AUTHENTICATION
+   Login, authenticated session and access presentation
+   ========================================================= */
+
+.operator-access {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  flex-wrap: wrap;
+  width: min(1180px, calc(100% - 48px));
+  margin: 18px auto 0;
+  padding: 20px 24px;
+  border: 1px solid #dfe6f0;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(20, 43, 69, 0.045);
+}
+
+.operator-access-heading {
+  flex: 1;
+  min-width: 220px;
+}
+
+.operator-access-heading h2 {
+  margin: 5px 0 7px;
+  color: #20364e;
+  font-family: 'Manrope', sans-serif;
+  font-size: 19px;
+  line-height: 1.4;
+}
+
+.operator-access-heading p,
+.operator-access > div > p {
+  max-width: 570px;
+  margin: 0;
+  color: #758095;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.operator-access-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #7b8799;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .8px;
+}
+
+.operator-access-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.operator-access-info strong {
+  color: #20364e;
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.operator-access-info .status-pill {
+  margin: 0;
+}
+
+/* Login form */
+
+.operator-login-form {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) minmax(150px, 1fr) auto;
+  align-items: end;
+  gap: 9px 12px;
+  width: min(100%, 690px);
+}
+
+.operator-login-form label {
+  grid-row: 1;
+  color: #68788e;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.operator-login-form input {
+  grid-row: 2;
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid #dfe6f0;
+  border-radius: 8px;
+  outline: none;
+  background: #fbfcfe;
+  color: #263b53;
+  font-family: inherit;
+  font-size: 12px;
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease,
+    background .2s ease;
+}
+
+.operator-login-form input::placeholder {
+  color: #9aa5b5;
+}
+
+.operator-login-form input:focus {
+  border-color: #7898c5;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(82, 119, 174, .11);
+}
+
+.operator-login-form input:disabled {
+  cursor: not-allowed;
+  opacity: .65;
+}
+
+.operator-login-form > button {
+  grid-column: 3;
+  grid-row: 2;
+  min-height: 42px;
+  white-space: nowrap;
+}
+
+.operator-login-form .inline-error {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  margin: 2px 0 0;
+}
+
+/* Authentication helper and error messages */
+
+.operator-auth-hint {
+  margin: 12px 0 0;
+  color: #758095;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.operator-access .inline-error {
+  flex-basis: 100%;
+}
+
+/* Disabled recovery controls */
+
+.reconciliation-controls .button:disabled,
+.operator-access .button:disabled,
+.operator-login-form .button:disabled {
+  cursor: not-allowed;
+  opacity: .55;
+  box-shadow: none;
+}
+
+/* Authentication responsive layout */
+
+@media (max-width: 900px) {
+  .operator-access {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .operator-login-form {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .operator-access {
+    width: calc(100% - 28px);
+    gap: 16px;
+    margin-top: 14px;
+    padding: 17px;
+  }
+
+  .operator-login-form {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .operator-login-form label,
+  .operator-login-form input,
+  .operator-login-form > button,
+  .operator-login-form .inline-error {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .operator-login-form label:not(:first-child) {
+    margin-top: 7px;
+  }
+
+  .operator-login-form > button {
+    width: 100%;
+    margin-top: 7px;
+  }
+
+  .operator-access-info {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+  }
+}
