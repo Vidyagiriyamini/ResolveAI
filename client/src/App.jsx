@@ -802,8 +802,22 @@ export default function App() {
 
     try {
       const response = await fetch(
-        `/api/investigations/${INVESTIGATION_ID}`
+        `/api/investigations/${INVESTIGATION_ID}`,
+        { credentials: "same-origin" }
       );
+
+      if (response.status === 401) {
+        setOperator(null);
+        setLoginPassword("");
+        setLoginError(
+          "Your operator session has expired. Please sign in again."
+        );
+
+        throw new Error(
+          "Operator authentication is required. Please sign in again."
+        );
+      }
+
       const data = await response.json();
 
       if (!response.ok || !data.success || !data.investigation) {
@@ -827,8 +841,22 @@ export default function App() {
 
     try {
       const response = await fetch(
-        `/api/reconciliation-proposals/${PROPOSAL_ID}`
+        `/api/reconciliation-proposals/${PROPOSAL_ID}`,
+        { credentials: "same-origin" }
       );
+
+      if (response.status === 401) {
+        setOperator(null);
+        setLoginPassword("");
+        setLoginError(
+          "Your operator session has expired. Please sign in again."
+        );
+
+        throw new Error(
+          "Operator authentication is required. Please sign in again."
+        );
+      }
+
       const data = await response.json();
 
       if (!response.ok || data.success !== true) {
@@ -857,12 +885,30 @@ export default function App() {
     ]);
   }, [loadInvestigation, loadProposal]);
 
-  // Load the existing case and proposal.
+  // Load private case data only after operator session restoration.
   useEffect(() => {
-    if (isSuccessPage || isCancelPage) return;
+    if (isSuccessPage || isCancelPage || authChecking) return;
+
+    if (!operator) {
+      setInvestigation(null);
+      setProposal(null);
+      setAiState("idle");
+      setAiError("");
+      setLoadState("idle");
+      setLoadError("");
+      setReconciliationState("idle");
+      setReconciliationError("");
+      return;
+    }
 
     refreshCaseData().catch(() => {});
-  }, [isSuccessPage, isCancelPage, refreshCaseData]);
+  }, [
+    isSuccessPage,
+    isCancelPage,
+    authChecking,
+    operator,
+    refreshCaseData,
+  ]);
 
   // Restore the operator session when the dashboard loads.
   useEffect(() => {
@@ -1023,6 +1069,14 @@ export default function App() {
       }
 
       setOperator(null);
+      setInvestigation(null);
+      setProposal(null);
+      setAiState("idle");
+      setAiError("");
+      setLoadState("idle");
+      setLoadError("");
+      setReconciliationState("idle");
+      setReconciliationError("");
       setLoginPassword("");
       setLoginError("");
     } catch (error) {
@@ -1063,11 +1117,24 @@ export default function App() {
     try {
       const response = await fetch(
         `/api/investigations/${INVESTIGATION_ID}/ai-analysis`,
-        { method: "POST" }
+        { method: "POST", credentials: "same-origin" }
       );
+
+      if (response.status === 401) {
+        setOperator(null);
+        setLoginPassword("");
+        setLoginError(
+          "Your operator session has expired. Please sign in again."
+        );
+
+        throw new Error(
+          "Operator authentication is required. Please sign in again."
+        );
+      }
+
       const data = await response.json();
 
-      if (!response.ok || data.success === false) {
+      if (!response.ok || data.success !== true) {
         throw new Error(data.error || "AI investigation failed.");
       }
 
@@ -1372,285 +1439,289 @@ export default function App() {
           </StatusPill>
         </section>
 
-        <section
-          className="compact-metrics"
-          aria-label="Investigation summary"
-        >
-          <div className="compact-metric">
-            <span>Current case</span>
-            <strong>#{investigation?.id || INVESTIGATION_ID}</strong>
-            <small>
-              {loadState === "complete"
-                ? "Loaded from SQLite"
-                : humanize(loadState)}
-            </small>
-          </div>
-
-          <div className="compact-metric">
-            <span>Severity</span>
-            <strong>
-              {investigation ? humanize(severity) : "—"}
-            </strong>
-            <small>
-              {isSimulated
-                ? "Simulated scenario"
-                : !hasMerchantEvidence
-                  ? "Merchant evidence missing"
-                  : "Recorded evidence"}
-            </small>
-          </div>
-
-          <div className="compact-metric">
-            <span>AI analysis</span>
-            <strong>
-              {aiState === "loading"
-                ? "Running…"
-                : hasAi
-                  ? humanize(ai.status || "Available")
-                  : "Not run"}
-            </strong>
-            <small>{ai.model || "Local AI"}</small>
-          </div>
-
-          <div className="compact-metric">
-            <span>Recovery</span>
-            <strong>
-              {reconciliationExecuted
-                ? "Simulated execution"
-                : "Human-led"}
-            </strong>
-            <small>
-              {reconciliationExecuted
-                ? "Actual payment unchanged"
-                : "No automatic payment changes"}
-            </small>
-          </div>
-        </section>
-
-        <div className="compact-layout">
-          <section id="investigation" className="panel compact-case">
-            <div className="compact-section-header">
-              <div>
-                <div className="eyebrow">INVESTIGATION WORKSPACE</div>
-                <h2>Payment investigation</h2>
-              </div>
-
-              {investigation && (
-                <StatusPill type={caseStatusType}>
-                  {caseStatusLabel}
-                </StatusPill>
-              )}
+        {operator && !authChecking && (
+          <section
+            className="compact-metrics"
+            aria-label="Investigation summary"
+          >
+            <div className="compact-metric">
+              <span>Current case</span>
+              <strong>#{investigation?.id || INVESTIGATION_ID}</strong>
+              <small>
+                {loadState === "complete"
+                  ? "Loaded from SQLite"
+                  : humanize(loadState)}
+              </small>
             </div>
 
-            {loadState === "loading" && (
-              <p role="status">
-                Loading investigation from the backend…
-              </p>
-            )}
+            <div className="compact-metric">
+              <span>Severity</span>
+              <strong>
+                {investigation ? humanize(severity) : "—"}
+              </strong>
+              <small>
+                {isSimulated
+                  ? "Simulated scenario"
+                  : !hasMerchantEvidence
+                    ? "Merchant evidence missing"
+                    : "Recorded evidence"}
+              </small>
+            </div>
 
-            {loadError && (
-              <div className="inline-error" role="alert">
-                {loadError}{" "}
-                <button
-                  className="button button-primary"
-                  onClick={() => refreshCaseData().catch(() => {})}
-                >
-                  Retry
-                </button>
-              </div>
-            )}
+            <div className="compact-metric">
+              <span>AI analysis</span>
+              <strong>
+                {aiState === "loading"
+                  ? "Running…"
+                  : hasAi
+                    ? humanize(ai.status || "Available")
+                    : "Not run"}
+              </strong>
+              <small>{ai.model || "Local AI"}</small>
+            </div>
 
-            {investigation && (
-              <>
-                <div className="compact-case-title">
-                  <div>
-                    <span className="eyebrow">
-                      {humanize(investigation.classification)}
-                    </span>
-                    <h3>{caseHeadline}</h3>
-                  </div>
+            <div className="compact-metric">
+              <span>Recovery</span>
+              <strong>
+                {reconciliationExecuted
+                  ? "Simulated execution"
+                  : "Human-led"}
+              </strong>
+              <small>
+                {reconciliationExecuted
+                  ? "Actual payment unchanged"
+                  : "No automatic payment changes"}
+              </small>
+            </div>
+          </section>
+        )}
 
-                  <StatusPill type={severityType}>
-                    {humanize(severity)} severity
+        <div className="compact-layout">
+          {operator && !authChecking && (
+            <section id="investigation" className="panel compact-case">
+              <div className="compact-section-header">
+                <div>
+                  <div className="eyebrow">INVESTIGATION WORKSPACE</div>
+                  <h2>Payment investigation</h2>
+                </div>
+
+                {investigation && (
+                  <StatusPill type={caseStatusType}>
+                    {caseStatusLabel}
                   </StatusPill>
+                )}
+              </div>
+
+              {loadState === "loading" && (
+                <p role="status">
+                  Loading investigation from the backend…
+                </p>
+              )}
+
+              {loadError && (
+                <div className="inline-error" role="alert">
+                  {loadError}{" "}
+                  <button
+                    className="button button-primary"
+                    onClick={() => refreshCaseData().catch(() => {})}
+                  >
+                    Retry
+                  </button>
                 </div>
+              )}
 
-                <div className="compact-evidence">
-                  <div className="compact-evidence-card">
-                    <span>PayPal · recorded evidence</span>
-                    <strong>{humanize(evidence.paypalStatus)}</strong>
-                    <small>
-                      Order: {evidence.orderId || "Not recorded"}
-                    </small>
-                  </div>
-
-                  <div className="compact-evidence-card">
-                    <span>
-                      Merchant · original simulated state
-                    </span>
-                    <strong>{humanize(merchantStatus)}</strong>
-                    <small>
-                      Capture: {evidence.captureId || "Not recorded"}
-                    </small>
-                  </div>
-                </div>
-
-                <div className="compact-evidence-meta">
-                  <span>
-                    Amount:{" "}
-                    <strong>
-                      {evidence.amount || "—"} {evidence.currency || ""}
-                    </strong>
-                  </span>
-
-                  <span>
-                    Source:{" "}
-                    <strong>
-                      {evidence.evidenceSource || "Not recorded"}
-                    </strong>
-                  </span>
-
-                  {evidence.verifiedAt && (
-                    <span>
-                      Recorded:{" "}
-                      <strong>{formatTimestamp(evidence.verifiedAt)}</strong>
-                    </span>
-                  )}
-                </div>
-
-                <div className="compact-integrity">
-                  <strong>Evidence boundary:</strong>{" "}
-                  {isSimulated
-                    ? "This is a simulated merchant discrepancy, not a confirmed customer incident."
-                    : !hasMerchantEvidence
-                      ? "Merchant status is UNKNOWN. Saved PayPal evidence alone does not establish a real provider-versus-merchant mismatch."
-                      : "This case uses recorded merchant state; verify its origin before any recovery action."}
-                </div>
-
-                <VerificationPanel paypal={paypal} ai={ai} />
-
-                <CurrentCaseState
-                  investigation={investigation}
-                  proposal={proposal}
-                />
-
-                <div className="compact-ai-card">
-                  <div className="compact-ai-top">
+              {investigation && (
+                <>
+                  <div className="compact-case-title">
                     <div>
-                      <div className="eyebrow">
-                        RULE-BASED DECISION SUPPORT
-                      </div>
-                      <h3>Recovery guidance</h3>
+                      <span className="eyebrow">
+                        {humanize(investigation.classification)}
+                      </span>
+                      <h3>{caseHeadline}</h3>
                     </div>
 
-                    <StatusPill type="neutral">
-                      Backend rule
+                    <StatusPill type={severityType}>
+                      {humanize(severity)} severity
                     </StatusPill>
                   </div>
 
-                  <p className="compact-recommendation">
-                    {investigation.recommendedAction ||
-                      ai.recommendedAction ||
-                      "No recovery guidance has been recorded for this investigation."}
-                  </p>
+                  <div className="compact-evidence">
+                    <div className="compact-evidence-card">
+                      <span>PayPal · recorded evidence</span>
+                      <strong>{humanize(evidence.paypalStatus)}</strong>
+                      <small>
+                        Order: {evidence.orderId || "Not recorded"}
+                      </small>
+                    </div>
 
-                  <p className="compact-guidance-note">
-                    This recommendation is supplied by the deterministic
-                    backend decision logic. It is separate from the
-                    language model's analysis.
-                  </p>
+                    <div className="compact-evidence-card">
+                      <span>
+                        Merchant · original simulated state
+                      </span>
+                      <strong>{humanize(merchantStatus)}</strong>
+                      <small>
+                        Capture: {evidence.captureId || "Not recorded"}
+                      </small>
+                    </div>
+                  </div>
 
-                  <div className="compact-ai-actions">
-                    <button
-                      className="button button-primary"
-                      onClick={handleAiInvestigation}
-                      disabled={aiState === "loading"}
-                    >
-                      {aiState === "loading"
-                        ? "Investigating…"
-                        : hasAi
-                          ? "Run AI analysis again"
-                          : "Investigate with AI"}
-                    </button>
+                  <div className="compact-evidence-meta">
+                    <span>
+                      Amount:{" "}
+                      <strong>
+                        {evidence.amount || "—"} {evidence.currency || ""}
+                      </strong>
+                    </span>
 
-                    {hasAi && (
-                      <span className="compact-model">
-                        {ai.model || "Local model"} · Case #{investigation.id}
+                    <span>
+                      Source:{" "}
+                      <strong>
+                        {evidence.evidenceSource || "Not recorded"}
+                      </strong>
+                    </span>
+
+                    {evidence.verifiedAt && (
+                      <span>
+                        Recorded:{" "}
+                        <strong>{formatTimestamp(evidence.verifiedAt)}</strong>
                       </span>
                     )}
                   </div>
 
-                  {aiError && (
-                    <div className="inline-error" role="alert">
-                      {aiError}
-                    </div>
-                  )}
+                  <div className="compact-integrity">
+                    <strong>Evidence boundary:</strong>{" "}
+                    {isSimulated
+                      ? "This is a simulated merchant discrepancy, not a confirmed customer incident."
+                      : !hasMerchantEvidence
+                        ? "Merchant status is UNKNOWN. Saved PayPal evidence alone does not establish a real provider-versus-merchant mismatch."
+                        : "This case uses recorded merchant state; verify its origin before any recovery action."}
+                  </div>
 
-                  {aiState === "loading" && (
-                    <p className="compact-ai-progress" role="status">
-                      AI investigation is running. The existing case
-                      evidence and payment state will remain unchanged.
+                  <VerificationPanel paypal={paypal} ai={ai} />
+
+                  <CurrentCaseState
+                    investigation={investigation}
+                    proposal={proposal}
+                  />
+
+                  <div className="compact-ai-card">
+                    <div className="compact-ai-top">
+                      <div>
+                        <div className="eyebrow">
+                          RULE-BASED DECISION SUPPORT
+                        </div>
+                        <h3>Recovery guidance</h3>
+                      </div>
+
+                      <StatusPill type="neutral">
+                        Backend rule
+                      </StatusPill>
+                    </div>
+
+                    <p className="compact-recommendation">
+                      {investigation.recommendedAction ||
+                        ai.recommendedAction ||
+                        "No recovery guidance has been recorded for this investigation."}
                     </p>
-                  )}
 
-                  {hasAi && (
-                    <div className="compact-report-wrapper">
-                      <div className="compact-report-heading">
-                        <div>
-                          <div className="eyebrow">LOCAL LANGUAGE MODEL</div>
-                          <h3>AI investigation findings</h3>
-                        </div>
+                    <p className="compact-guidance-note">
+                      This recommendation is supplied by the deterministic
+                      backend decision logic. It is separate from the
+                      language model's analysis.
+                    </p>
 
-                        <span className="compact-report-date">
-                          Analyzed: {formatTimestamp(ai.analyzedAt)}
+                    <div className="compact-ai-actions">
+                      <button
+                        className="button button-primary"
+                        onClick={handleAiInvestigation}
+                        disabled={aiState === "loading"}
+                      >
+                        {aiState === "loading"
+                          ? "Investigating…"
+                          : hasAi
+                            ? "Run AI analysis again"
+                            : "Investigate with AI"}
+                      </button>
+
+                      {hasAi && (
+                        <span className="compact-model">
+                          {ai.model || "Local model"} · Case #{investigation.id}
                         </span>
-                      </div>
-
-                      <div className="compact-report-history-note">
-                        <strong>Analysis snapshot:</strong> This report
-                        was generated on {formatTimestamp(ai.analyzedAt)}.
-                        It is an advisory assessment of the evidence
-                        available at that time. The recorded reconciliation
-                        outcome is displayed separately in the case state
-                        and audit trail.
-                      </div>
-
-                      {freshVerificationPassed && (
-                        <div className="compact-report-verification">
-                          PayPal evidence verification passed. This confirms
-                          the recorded PayPal order and capture match the
-                          fresh provider check; it does not independently
-                          establish merchant fulfillment.
-                        </div>
                       )}
-
-                      <div className="compact-full-report">
-                        {aiSections.map((section, index) => (
-                          <ReportSection
-                            key={`${section.title}-${index}`}
-                            title={section.title}
-                            text={section.text}
-                          />
-                        ))}
-
-                        {aiSections.length === 0 && (
-                          <p>No detailed explanation recorded.</p>
-                        )}
-                      </div>
                     </div>
-                  )}
 
-                  <p className="compact-safety">
-                    AI findings are advisory. They do not capture,
-                    refund or modify payments. Recovery actions remain
-                    separate controlled operations.
-                  </p>
-                </div>
+                    {aiError && (
+                      <div className="inline-error" role="alert">
+                        {aiError}
+                      </div>
+                    )}
 
-                <AuditTimeline events={investigation.auditTimeline || []} />
-              </>
-            )}
-          </section>
+                    {aiState === "loading" && (
+                      <p className="compact-ai-progress" role="status">
+                        AI investigation is running. The existing case
+                        evidence and payment state will remain unchanged.
+                      </p>
+                    )}
+
+                    {hasAi && (
+                      <div className="compact-report-wrapper">
+                        <div className="compact-report-heading">
+                          <div>
+                            <div className="eyebrow">LOCAL LANGUAGE MODEL</div>
+                            <h3>AI investigation findings</h3>
+                          </div>
+
+                          <span className="compact-report-date">
+                            Analyzed: {formatTimestamp(ai.analyzedAt)}
+                          </span>
+                        </div>
+
+                        <div className="compact-report-history-note">
+                          <strong>Analysis snapshot:</strong> This report
+                          was generated on {formatTimestamp(ai.analyzedAt)}.
+                          It is an advisory assessment of the evidence
+                          available at that time. The recorded reconciliation
+                          outcome is displayed separately in the case state
+                          and audit trail.
+                        </div>
+
+                        {freshVerificationPassed && (
+                          <div className="compact-report-verification">
+                            PayPal evidence verification passed. This confirms
+                            the recorded PayPal order and capture match the
+                            fresh provider check; it does not independently
+                            establish merchant fulfillment.
+                          </div>
+                        )}
+
+                        <div className="compact-full-report">
+                          {aiSections.map((section, index) => (
+                            <ReportSection
+                              key={`${section.title}-${index}`}
+                              title={section.title}
+                              text={section.text}
+                            />
+                          ))}
+
+                          {aiSections.length === 0 && (
+                            <p>No detailed explanation recorded.</p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    <p className="compact-safety">
+                      AI findings are advisory. They do not capture,
+                      refund or modify payments. Recovery actions remain
+                      separate controlled operations.
+                    </p>
+                  </div>
+
+                  <AuditTimeline events={investigation.auditTimeline || []} />
+                </>
+              )}
+            </section>
+          )}
 
           <aside className="compact-sidebar">
             <section id="checkout" className="panel compact-checkout">
@@ -1709,18 +1780,20 @@ export default function App() {
           </aside>
         </div>
 
-        <ReconciliationPanel
-          proposal={proposal}
-          investigation={investigation}
-          state={reconciliationState}
-          error={reconciliationError}
-          operator={operator}
-          authChecking={authChecking}
-          onRefresh={handleRefreshProposal}
-          onCreate={handleCreateProposal}
-          onApprove={handleApproveProposal}
-          onExecute={handleExecuteReconciliation}
-        />
+        {operator && !authChecking && (
+          <ReconciliationPanel
+            proposal={proposal}
+            investigation={investigation}
+            state={reconciliationState}
+            error={reconciliationError}
+            operator={operator}
+            authChecking={authChecking}
+            onRefresh={handleRefreshProposal}
+            onCreate={handleCreateProposal}
+            onApprove={handleApproveProposal}
+            onExecute={handleExecuteReconciliation}
+          />
+        )}
 
         <footer className="dashboard-footer">
           <span>

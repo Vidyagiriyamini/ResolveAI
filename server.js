@@ -718,7 +718,7 @@ app.post("/api/orders/:orderId/capture", async (req, res) => {
 });
 
 // Verify an existing PayPal order (read-only).
-app.get("/api/paypal/orders/:orderId", async (req, res) => {
+app.get("/api/paypal/orders/:orderId", requireOperator, async (req, res) => {
   try {
     const orderId = req.params.orderId;
 
@@ -790,7 +790,7 @@ app.get("/api/paypal/orders/:orderId", async (req, res) => {
 });
 
 // Verify existing PayPal capture (read-only).
-app.get("/api/paypal/captures/:captureId", async (req, res) => {
+app.get("/api/paypal/captures/:captureId", requireOperator, async (req, res) => {
   try {
     const captureId = req.params.captureId;
 
@@ -864,6 +864,7 @@ app.get("/api/paypal/captures/:captureId", async (req, res) => {
  */
 app.get(
   "/api/investigations/:investigationRunId",
+  requireOperator,
   (req, res) => {
     try {
       const investigationRunId = Number(
@@ -1116,6 +1117,8 @@ app.get(
 app.post(
   "/api/investigations/:investigationRunId/ai-analysis",
   aiAnalysisLimiter,
+  requireSameOrigin,
+  requireOperator,
   async (req, res) => {
     try {
       const investigationRunId = Number(
@@ -1168,6 +1171,8 @@ app.post(
 // Create or retrieve an idempotent reconciliation proposal.
 app.post(
   "/api/investigations/:investigationRunId/reconciliation-proposals",
+  requireSameOrigin,
+  requireOperator,
   (req, res) => {
     try {
       const investigationRunId = Number(
@@ -1216,6 +1221,7 @@ app.post(
 // Retrieve a reconciliation proposal.
 app.get(
   "/api/reconciliation-proposals/:proposalId",
+  requireOperator,
   (req, res) => {
     try {
       const proposalId = Number(req.params.proposalId);
