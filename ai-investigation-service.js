@@ -396,7 +396,7 @@ ${JSON.stringify(
     simulated: Boolean(investigation.simulated),
     recordedEvidence: evidence,
     freshPayPalVerification: freshPayPalEvidence,
-  },
+    },
   null,
   2
 )}
@@ -421,7 +421,6 @@ RULES:
 13. Do not claim any recovery action has been executed.
 14. Do not treat the recorded merchant status as independently verified.
 15. Do not claim the actual merchant record was changed.
-
 Return a complete report using exactly these five headings,
 each on its own line:
 

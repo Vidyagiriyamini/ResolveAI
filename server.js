@@ -7,6 +7,7 @@ const express = require("express");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const Database = require("better-sqlite3");
+const { getPayPalAccessToken } = require("./paypal-auth-service");
 
 const {
   createAiInvestigationService,
@@ -53,40 +54,6 @@ if (PAYPAL_ENV !== "sandbox") {
 }
 
 const PAYPAL_BASE_URL = "https://api-m.sandbox.paypal.com";
-
-// Get PayPal OAuth access token.
-async function getPayPalAccessToken() {
-  const clientId = process.env.PAYPAL_CLIENT_ID;
-  const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
-
-  if (!clientId || !clientSecret) {
-    throw new Error("PayPal credentials are missing from .env");
-  }
-
-  const credentials = Buffer.from(
-    `${clientId}:${clientSecret}`
-  ).toString("base64");
-
-  const response = await fetch(
-    `${PAYPAL_BASE_URL}/v1/oauth2/token`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${credentials}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: "grant_type=client_credentials",
-    }
-  );
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error("PayPal authentication failed");
-  }
-
-  return data.access_token;
-}
 
 // Verify existing PayPal order and capture evidence.
 async function verifyPayPalEvidence(orderId, captureId) {
