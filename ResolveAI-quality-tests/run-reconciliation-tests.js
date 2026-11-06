@@ -268,7 +268,7 @@ async function main() {
         }
     });
 
-    await runTest("Repeated execution is idempotent", async () => {
+    await runTest("Repeated execution is idempotent and creates one audit event", async () => {
         const service = seedScenario();
         const proposal = service.propose(1).proposal;
 
@@ -281,16 +281,143 @@ async function main() {
             throw new Error("Expected alreadyExecuted on repeated execution");
         }
 
-        const count = db.prepare(`
+        const proposalCount = db.prepare(`
             SELECT COUNT(*) AS count
             FROM reconciliation_proposals
         `).get().count;
 
-        if (count !== 1) {
+        if (proposalCount !== 1) {
             throw new Error("Duplicate proposal was created");
+        }
+
+        const executionEvents = db.prepare(`
+            SELECT details_json
+            FROM audit_events
+            WHERE event_type = 'RECONCILIATION_EXECUTED'
+        `).all();
+
+        if (executionEvents.length !== 1) {
+            throw new Error("Expected exactly one execution audit event");
+        }
+
+        const details = JSON.parse(executionEvents[0].details_json);
+
+        if (
+            details.simulated !== true ||
+            details.paypalPaymentChanged !== false ||
+            details.actualMerchantRecordChanged !== false
+        ) {
+            throw new Error("Execution audit safety fields are incorrect");
         }
     });
 
+    await runTest("Concurrent execution processes a proposal only once", async () => {
+        let verificationCalls = 0;
+        let releaseVerification;
+
+        const verificationBarrier = new Promise((resolve) => {
+            releaseVerification = resolve;
+        });
+
+        const service = seedScenario({
+            verifier: async () => {
+                verificationCalls += 1;
+
+                if (verificationCalls === 2) {
+                    releaseVerification();
+                }
+
+                await verificationBarrier;
+
+                return {
+                    verifiedByPayPalApi: true,
+                    orderId: "TEST-ORDER-001",
+                    orderStatus: "COMPLETED",
+                    captureId: "TEST-CAPTURE-001",
+                    captureStatus: "COMPLETED",
+                    captureAmount: {
+                        currency_code: "USD",
+                        value: "10.00"
+                    },
+                    captureBelongsToOrder: true,
+                    orderCaptureMatches: true
+                };
+            }
+        });
+
+        const proposal = service.propose(1).proposal;
+        service.approve(proposal.id, "Test Operator");
+
+        const results = await Promise.all([
+            service.execute(proposal.id),
+            service.execute(proposal.id)
+        ]);
+
+        if (verificationCalls !== 2) {
+            throw new Error("Expected both requests to perform fresh verification");
+        }
+
+        if (results.length !== 2) {
+            throw new Error("Expected both execution requests to finish");
+        }
+
+        const alreadyExecutedCount = results.filter(
+            result => result.alreadyExecuted === true
+        ).length;
+
+        if (alreadyExecutedCount !== 1) {
+            throw new Error("Expected exactly one request to report alreadyExecuted");
+        }
+
+        const savedProposal = service.getProposal(proposal.id);
+
+        if (savedProposal.status !== "EXECUTED") {
+            throw new Error("Concurrent execution did not leave proposal EXECUTED");
+        }
+
+        const merchantOrder = db.prepare(`
+            SELECT merchant_status
+            FROM simulated_merchant_orders
+            WHERE payment_id = 1
+        `).get();
+
+        if (!merchantOrder || merchantOrder.merchant_status !== "COMPLETED") {
+            throw new Error("Simulated merchant order was not completed correctly");
+        }
+
+        const actualPayment = db.prepare(`
+            SELECT merchant_status, paypal_status
+            FROM payments
+            WHERE id = 1
+        `).get();
+
+        if (
+            actualPayment.merchant_status !== "PENDING" ||
+            actualPayment.paypal_status !== "COMPLETED"
+        ) {
+            throw new Error("Concurrent execution changed the actual payment record");
+        }
+
+        const executionEvents = db.prepare(`
+            SELECT details_json
+            FROM audit_events
+            WHERE event_type = 'RECONCILIATION_EXECUTED'
+        `).all();
+
+        if (executionEvents.length !== 1) {
+            throw new Error("Concurrent requests created duplicate execution audit events");
+        }
+
+        const details = JSON.parse(executionEvents[0].details_json);
+
+        if (
+            details.simulated !== true ||
+            details.paypalPaymentChanged !== false ||
+            details.actualMerchantRecordChanged !== false
+        ) {
+            throw new Error("Concurrent execution audit safety fields are incorrect");
+        }
+    });
     await runTest("Pending PayPal capture blocks reconciliation", async () => {
         const service = seedScenario({
             evidence: { captureStatus: "PENDING" }
