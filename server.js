@@ -951,7 +951,11 @@ app.get(
             details_json,
             created_at
           FROM audit_events
-          WHERE event_type = 'AI_ANALYSIS_COMPLETED'
+          WHERE event_type IN (
+            'AI_ANALYSIS_COMPLETED',
+            'AI_ANALYSIS_FALLBACK',
+            'AI_ANALYSIS_BLOCKED'
+          )
             AND entity_type = 'INVESTIGATION'
             AND entity_id = ?
           ORDER BY id DESC
