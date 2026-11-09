@@ -6,12 +6,24 @@ ResolveAI is an AI-assisted payment investigation and reconciliation platform bu
 
 It combines verified payment evidence, deterministic discrepancy detection, AI-assisted explanations, and human-controlled simulated recovery in one operations workbench.
 
+## Live Demo
+
+**Hosted application:** https://resolveai-demo.onrender.com
+
+- The hosted application uses PayPal Sandbox, not live payment processing.
+- The hosted demo uses a separate cloud database and does not contain the records in the local development database.
+- The current Render Free deployment uses ephemeral storage. Cloud database records may be lost when the service restarts, redeploys, or spins down.
+- The hosted environment does not have access to the developer's local Ollama instance. AI analysis may therefore use the application's deterministic fallback.
+- Operator credentials are configured separately and are not published in this repository.
+
+For a populated demonstration, use the local application and its existing demonstration records.
+
 ## Key Features
 
 - **PayPal Sandbox integration:** Retrieve orders and captures using PayPal REST APIs.
 - **Evidence verification:** Independently verify payment details before investigation.
 - **Deterministic discrepancy detection:** Identify mismatches between PayPal and merchant-side records.
-- **AI-assisted investigation:** Use local Ollama with Llama 3.2 to explain verified evidence.
+- **AI-assisted investigation:** Use local Ollama with Llama 3.2 for live local inference when available.
 - **Validated AI reports:** Validate AI output and use a deterministic fallback when AI is unavailable or its response is unsuitable.
 - **Operations dashboard:** Review payment activity, incidents, investigations, and reconciliation proposals.
 - **Interactive operations workbench:** AG Grid Community supports sorting, filtering, pagination, row selection, and CSV export.
@@ -46,11 +58,12 @@ ResolveAI provides an operator-focused interface for reviewing payment operation
 |---|---|
 | Frontend | React 19, Vite 6 |
 | Operations grid | AG Grid Community |
-| Backend | Node.js 20, Express 5 |
+| Backend | Node.js, Express 5 |
 | Database | SQLite, better-sqlite3 |
 | Payment integration | PayPal REST APIs (Sandbox) |
-| AI | Ollama, Llama 3.2 |
+| AI inference | Ollama, Llama 3.2 (local) |
 | Testing | Automated Node.js test suites |
+| Deployment | Render |
 
 ## Safety and Human Oversight
 
@@ -83,18 +96,29 @@ ResolveAI is designed around controlled payment operations:
    cd ResolveAI
    ```
 
-2. Install dependencies:
+2. Install backend and frontend dependencies:
 
    ```bash
    npm install
    npm install --prefix client
    ```
 
-3. Create a local `.env` file from `.env.example`.
+3. Create a local `.env` file by copying `.env.example`.
 
-4. Configure the required PayPal Sandbox credentials, operator credentials, session secret, and other environment settings.
+   PowerShell:
 
-5. Optionally install Ollama and download the model:
+   ```powershell
+   Copy-Item .env.example .env
+   ```
+
+4. Configure the required PayPal Sandbox credentials, operator credentials, session secret, and allowed origins in `.env`.
+
+   - Use a unique operator password of at least 16 characters.
+   - Use a cryptographically random session secret of at least 64 characters.
+   - Keep `PAYPAL_ENV=sandbox`.
+   - For local access, retain the appropriate localhost origins in `RESOLVEAI_ALLOWED_ORIGINS`.
+
+5. For local AI inference, install Ollama and download the model:
 
    ```bash
    ollama pull llama3.2
@@ -142,14 +166,32 @@ Database health endpoint:
 http://localhost:3000/api/health/database
 ```
 
+## Deployment Notes
+
+The application can be deployed as a Node.js service that serves the built frontend and backend API from the same origin.
+
+Configure the deployment environment with:
+
+- `NODE_ENV=production`
+- `PAYPAL_ENV=sandbox`
+- PayPal Sandbox client credentials
+- Unique operator credentials
+- A cryptographically random session secret
+- `RESOLVEAI_ALLOWED_ORIGINS` set to the deployed application origin
+- `RESOLVEAI_DB_PATH` set to the intended database location
+
+SQLite persistence requires durable storage. An ephemeral cloud filesystem is not suitable for retaining production or long-lived demonstration records.
+
+Local AI inference requires Ollama to be available to the application host. A cloud deployment without an accessible Ollama service uses the application's fallback behavior instead.
+
 ## Current Limitations
 
 - PayPal integration uses Sandbox, not live payment processing.
 - Local AI inference requires Ollama to be available on the machine hosting the application.
-- A cloud deployment cannot access a developer's local Ollama instance without additional infrastructure.
-- Cloud deployment requires appropriate environment configuration and persistent database storage.
+- The hosted demo does not connect to the developer's local Ollama instance.
+- The current Render Free deployment uses ephemeral database storage.
 - Merchant reconciliation is simulated; it does not update a real external merchant system.
-- PayPal webhook registration requires a deployed HTTPS endpoint and PayPal Dashboard configuration.
+- PayPal webhook processing requires a configured webhook ID and PayPal Dashboard registration for the deployed HTTPS endpoint.
 
 ## License
 
