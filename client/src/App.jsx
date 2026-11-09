@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import OperationsGrid from "./OperationsGrid";
 import "./App.css";
 import "./CompactDashboard.css";
@@ -28,11 +28,11 @@ function formatTimestamp(value) {
 }
 
 function formatTime(value) {
-  if (!value) return "â€”";
+  if (!value) return "—";
 
   const date = new Date(value);
 
-  if (Number.isNaN(date.getTime())) return "â€”";
+  if (Number.isNaN(date.getTime())) return "—";
 
   return date.toLocaleString([], {
     month: "short",
@@ -43,7 +43,7 @@ function formatTime(value) {
 }
 
 function formatAmount(amount, currency) {
-  if (amount === undefined || amount === null || amount === "") return "â€”";
+  if (amount === undefined || amount === null || amount === "") return "—";
 
   const numeric = Number(amount);
 
@@ -335,7 +335,7 @@ function ReportSection({ title, text }) {
 
       <div className="compact-report-text">
         {lines.map((line, index) => {
-          const bulletMatch = line.match(/^[-*â€¢]\s+(.+)/);
+          const bulletMatch = line.match(/^[-*•]\s+(.+)/);
           const numberedMatch = line.match(/^(\d+)[.)]\s+(.+)/);
 
           if (bulletMatch || numberedMatch) {
@@ -346,7 +346,7 @@ function ReportSection({ title, text }) {
             return (
               <div className="report-list-item" key={index}>
                 <span className="report-list-marker" aria-hidden="true">
-                  {numberedMatch ? `${numberedMatch[1]}.` : "â€¢"}
+                  {numberedMatch ? `${numberedMatch[1]}.` : "•"}
                 </span>
                 <span>{renderReportText(content)}</span>
               </div>
@@ -510,7 +510,7 @@ function CurrentCaseState({ investigation, proposal }) {
   return (
     <section className="rai-card compact-current-state">
       <div className="eyebrow">CASE STATE / RECONCILIATION OUTCOME</div>
-      <h3>What changed â€” and what did not</h3>
+      <h3>What changed — and what did not</h3>
 
       <div className="compact-state-grid">
         <div className="compact-state-item">
@@ -607,7 +607,7 @@ function AuditTimeline({ events = [], defaultOpen = false }) {
                   <span className="compact-audit-ai-summary">
                     <strong>AI analysis history</strong>
                     <small>
-                      {aiEvents.length} recorded runs Â· Latest:{" "}
+                      {aiEvents.length} recorded runs · Latest:{" "}
                       {formatTimestamp(latestAiEvent?.createdAt)}
                     </small>
                   </span>
@@ -620,7 +620,7 @@ function AuditTimeline({ events = [], defaultOpen = false }) {
                       <div>
                         <strong>AI analysis completed</strong>
                         <span>
-                          Event #{event.id} Â· {formatTimestamp(event.createdAt)}
+                          Event #{event.id} · {formatTimestamp(event.createdAt)}
                         </span>
                       </div>
                     </div>
@@ -709,7 +709,7 @@ function ReconciliationPanel({
           onClick={onRefresh}
           disabled={busy}
         >
-          {busy ? "Refreshingâ€¦" : "â†» Refresh"}
+          {busy ? "Refreshing…" : "↻ Refresh"}
         </button>
       </div>
 
@@ -720,7 +720,7 @@ function ReconciliationPanel({
       )}
 
       {state === "loading" && !proposal && (
-        <p role="status">Loading reconciliation proposalâ€¦</p>
+        <p role="status">Loading reconciliation proposal…</p>
       )}
 
       {!proposal && !proposalId && state !== "loading" && (
@@ -758,14 +758,14 @@ function ReconciliationPanel({
             <div>
               <span className="reconciliation-label">Investigation run</span>
               <strong>
-                {proposal?.investigationRunId ?? investigation?.id ?? "â€”"}
+                {proposal?.investigationRunId ?? investigation?.id ?? "—"}
               </strong>
             </div>
 
             <div>
               <span className="reconciliation-label">Payment</span>
               <strong>
-                {proposal?.paymentId ?? investigation?.paymentId ?? "â€”"}
+                {proposal?.paymentId ?? investigation?.paymentId ?? "—"}
               </strong>
             </div>
           </div>
@@ -787,13 +787,13 @@ function ReconciliationPanel({
 
             <div className="reconciliation-timeline-item">
               <span className="reconciliation-timeline-marker">
-                {approvedAt ? "âœ“" : "2"}
+                {approvedAt ? "✓" : "2"}
               </span>
               <div>
                 <strong>Human approval</strong>
                 <span>
                   {approvedAt
-                    ? `Approved by ${approvedBy || "operator"} Â· ${formatTimestamp(approvedAt)}`
+                    ? `Approved by ${approvedBy || "operator"} · ${formatTimestamp(approvedAt)}`
                     : "Awaiting approval"}
                 </span>
               </div>
@@ -801,7 +801,7 @@ function ReconciliationPanel({
 
             <div className="reconciliation-timeline-item">
               <span className="reconciliation-timeline-marker">
-                {executedAt ? "âœ“" : "3"}
+                {executedAt ? "✓" : "3"}
               </span>
               <div>
                 <strong>Execution</strong>
@@ -837,9 +837,9 @@ function ReconciliationPanel({
                 disabled={busy || !canAuthorize}
               >
                 {busy
-                  ? "Processingâ€¦"
+                  ? "Processing…"
                   : authChecking
-                    ? "Checking accessâ€¦"
+                    ? "Checking access…"
                     : "Approve proposal"}
               </button>
             )}
@@ -852,15 +852,15 @@ function ReconciliationPanel({
                 disabled={busy || !canAuthorize}
               >
                 {busy
-                  ? "Executingâ€¦"
+                  ? "Executing…"
                   : authChecking
-                    ? "Checking accessâ€¦"
+                    ? "Checking access…"
                     : "Execute approved action"}
               </button>
             )}
 
             {isExecuted && (
-              <StatusPill type="success">âœ“ Execution completed</StatusPill>
+              <StatusPill type="success">✓ Execution completed</StatusPill>
             )}
 
             {!isPending && !isApproved && !isExecuted && (
@@ -876,7 +876,7 @@ function ReconciliationPanel({
 
           {authChecking && !isExecuted && (
             <p className="operator-auth-hint" role="status">
-              Checking operator access before enabling recovery actionsâ€¦
+              Checking operator access before enabling recovery actions…
             </p>
           )}
         </>
@@ -1054,7 +1054,7 @@ function SplashScreen() {
     <div className="rai-splash" role="status" aria-live="polite">
       <BrandLogo size={40} inverse />
       <span className="rai-splash-loader" />
-      <p>Checking your operator sessionâ€¦</p>
+      <p>Checking your operator session…</p>
     </div>
   );
 }
@@ -1215,7 +1215,7 @@ function LoginScreen({
             )}
 
             <button type="submit" className="rai-signin" disabled={busy}>
-              {busy ? "Signing inâ€¦" : "Sign In"}
+              {busy ? "Signing in…" : "Sign In"}
               {!busy && <Icon name="arrowRight" size={16} />}
             </button>
           </form>
@@ -1234,9 +1234,9 @@ function LoginScreen({
               P
             </span>
             {paymentState === "loading"
-              ? "Creating orderâ€¦"
+              ? "Creating order…"
               : paymentState === "redirecting"
-                ? "Redirectingâ€¦"
+                ? "Redirecting…"
                 : "Continue with PayPal"}
           </button>
           <p className="rai-login-note">
@@ -1256,7 +1256,7 @@ function LoginScreen({
           </div>
 
           <p className="rai-copyright">
-            Â© 2026 ResolveAI. Built for a safer payment ecosystem.
+            © 2026 ResolveAI. Built for a safer payment ecosystem.
           </p>
         </div>
       </section>
@@ -1335,7 +1335,7 @@ function Sidebar({ activeNav, open, onNavigate, onLogout, logoutBusy, onClose })
             disabled={logoutBusy}
           >
             <Icon name="logout" size={18} />
-            {logoutBusy ? "Signing outâ€¦" : "Logout"}
+            {logoutBusy ? "Signing out…" : "Logout"}
           </button>
         </nav>
 
@@ -1393,7 +1393,7 @@ function Topbar({
             type="search"
             value={searchValue}
             onChange={(event) => onSearchChange(event.target.value)}
-            placeholder="Search payments, investigationsâ€¦"
+            placeholder="Search payments, investigations…"
             aria-label="Search payments and investigations"
           />
         </form>
@@ -1446,7 +1446,7 @@ function Topbar({
                 disabled={logoutBusy}
               >
                 <Icon name="logout" size={16} />
-                {logoutBusy ? "Signing outâ€¦" : "Sign out"}
+                {logoutBusy ? "Signing out…" : "Sign out"}
               </button>
             </div>
           )}
@@ -1480,7 +1480,7 @@ function LoadNotice({ model, onRetry }) {
     return (
       <div className="rai-notice" role="status">
         <span className="operations-grid-loader" />
-        Loading investigation from the backendâ€¦
+        Loading investigation from the backend…
       </div>
     );
   }
@@ -1575,7 +1575,7 @@ function SelectedInvestigationCard({
               disabled={aiState === "loading"}
             >
               <Icon name="sparkle" size={14} />
-              {aiState === "loading" ? "Runningâ€¦" : "Run AI Analysis"}
+              {aiState === "loading" ? "Running…" : "Run AI Analysis"}
             </button>
             <button
               type="button"
@@ -1761,7 +1761,7 @@ function OverviewView({
           tone="blue"
           icon="card"
           label="Case payment"
-          value={loaded ? formatAmount(evidence.amount, evidence.currency) : "â€”"}
+          value={loaded ? formatAmount(evidence.amount, evidence.currency) : "—"}
           detail={
             loaded
               ? `Order ${evidence.orderId || "not recorded"}`
@@ -1772,10 +1772,10 @@ function OverviewView({
           tone="red"
           icon="alert"
           label="Open incidents"
-          value={loaded ? openIncidents : "â€”"}
+          value={loaded ? openIncidents : "—"}
           detail={
             loaded
-              ? `${humanize(severity)} severity${isSimulated ? " Â· simulated" : ""}`
+              ? `${humanize(severity)} severity${isSimulated ? " · simulated" : ""}`
               : "No case loaded"
           }
         />
@@ -1794,7 +1794,7 @@ function OverviewView({
           tone="purple"
           icon="shield"
           label="Pending review"
-          value={loaded || proposalStatus ? (isPendingProposal ? 1 : 0) : "â€”"}
+          value={loaded || proposalStatus ? (isPendingProposal ? 1 : 0) : "—"}
           detail="Proposals awaiting approval"
         />
       </section>
@@ -1842,13 +1842,13 @@ function OverviewView({
    ========================================================= */
 
 function StatusCell({ value }) {
-  if (!value) return <span className="rai-muted">â€”</span>;
+  if (!value) return <span className="rai-muted">—</span>;
 
   return <StatusPill type={statusTone(value)}>{humanize(value)}</StatusPill>;
 }
 
 function SeverityCell({ value }) {
-  if (!value) return <span className="rai-muted">â€”</span>;
+  if (!value) return <span className="rai-muted">—</span>;
 
   const danger = ["HIGH", "CRITICAL"].includes(String(value).toUpperCase());
 
@@ -1928,7 +1928,7 @@ function InvestigationsView({ model, searchSeed, onOpenCase, onRetry }) {
         loading={model.loadState === "loading"}
         error={model.loadError}
         emptyMessage="No investigation has been loaded from the backend."
-        searchPlaceholder="Search investigationsâ€¦"
+        searchPlaceholder="Search investigations…"
         searchSeed={searchSeed}
         exportFileName="resolveai-investigations.csv"
         footerNote={`Showing investigation #${INVESTIGATION_ID} as returned by the backend.`}
@@ -1971,13 +1971,13 @@ function CheckoutPanel({ paymentState, paymentError, onCheckout }) {
         disabled={paymentState === "loading" || paymentState === "redirecting"}
       >
         {paymentState === "loading"
-          ? "Creating orderâ€¦"
+          ? "Creating order…"
           : paymentState === "redirecting"
-            ? "Redirectingâ€¦"
-            : "PayPal Â· Continue to checkout â†’"}
+            ? "Redirecting…"
+            : "Test PayPal Sandbox Payment →"}
       </button>
 
-      <small>Sandbox only Â· No live payment</small>
+      <small>Sandbox environment only · No real payment</small>
     </section>
   );
 }
@@ -2060,7 +2060,7 @@ function PaymentsView({
         loading={model.loadState === "loading"}
         error={model.loadError}
         emptyMessage="No payment evidence has been loaded from the backend."
-        searchPlaceholder="Search paymentsâ€¦"
+        searchPlaceholder="Search payments…"
         searchSeed={searchSeed}
         exportFileName="resolveai-payments.csv"
         footerNote="Payment evidence from the loaded investigation. Merchant status is simulated."
@@ -2247,7 +2247,7 @@ function AiFindingsCard({ model, aiState, aiError, onInvestigate }) {
   const summaryLines = summary
     ? summary.text
         .split("\n")
-        .map((line) => line.replace(/^[-*â€¢]\s+/, "").trim())
+        .map((line) => line.replace(/^[-*•]\s+/, "").trim())
         .filter(Boolean)
         .slice(0, 3)
     : [];
@@ -2299,7 +2299,7 @@ function AiFindingsCard({ model, aiState, aiError, onInvestigate }) {
           disabled={aiState === "loading"}
         >
           {aiState === "loading"
-            ? "Investigatingâ€¦"
+            ? "Investigating…"
             : hasAi
               ? "Run AI analysis again"
               : "Investigate with AI"}
@@ -2307,7 +2307,7 @@ function AiFindingsCard({ model, aiState, aiError, onInvestigate }) {
 
         {hasAi && (
           <span className="compact-model">
-            {ai.model || "Local model"} Â· Case #{investigation.id}
+            {ai.model || "Local model"} · Case #{investigation.id}
           </span>
         )}
       </div>
@@ -2371,7 +2371,7 @@ function ProposalStrip({
   let tone = "pending";
 
   if (!proposal && !proposalId) {
-    heading = rec.state === "loading" ? "Loading proposalâ€¦" : "No proposal yet";
+    heading = rec.state === "loading" ? "Loading proposal…" : "No proposal yet";
     helper = "Create a proposal to begin the controlled recovery workflow.";
     tone = "idle";
   } else if (isExecuted) {
@@ -2379,7 +2379,7 @@ function ProposalStrip({
     helper = "Only the simulated merchant order changed. No real funds moved.";
     tone = "done";
   } else if (isApproved) {
-    heading = "Approved â€” ready to execute";
+    heading = "Approved — ready to execute";
     helper = "Execution updates the simulated merchant order only.";
     tone = "ready";
   } else if (!isPending) {
@@ -2441,7 +2441,7 @@ function ProposalStrip({
             onClick={onApprove}
             disabled={busy || !canAuthorize}
           >
-            {busy ? "Processingâ€¦" : "Approve proposal"}
+            {busy ? "Processing…" : "Approve proposal"}
             {!busy && <Icon name="arrowRight" size={14} />}
           </button>
         )}
@@ -2453,12 +2453,12 @@ function ProposalStrip({
             onClick={onExecute}
             disabled={busy || !canAuthorize}
           >
-            {busy ? "Executingâ€¦" : "Execute approved action"}
+            {busy ? "Executing…" : "Execute approved action"}
             {!busy && <Icon name="arrowRight" size={14} />}
           </button>
         )}
 
-        {isExecuted && <StatusPill type="success">âœ“ Execution completed</StatusPill>}
+        {isExecuted && <StatusPill type="success">✓ Execution completed</StatusPill>}
 
         {!proposal && !proposalId && rec.state !== "loading" && (
           <button
@@ -2505,7 +2505,7 @@ function AuditMiniCard({ model, onViewAll }) {
                       hour: "numeric",
                       minute: "2-digit",
                     })
-                  : "â€”"}
+                  : "—"}
               </time>
             </li>
           ))}
@@ -2769,7 +2769,7 @@ function SettingsView({ operator, model, onLogout, busy }) {
             onClick={onLogout}
             disabled={busy}
           >
-            {busy ? "Signing outâ€¦" : "Sign out"}
+            {busy ? "Signing out…" : "Sign out"}
           </button>
         </section>
 
@@ -2780,7 +2780,7 @@ function SettingsView({ operator, model, onLogout, busy }) {
           <dl>
             <div>
               <dt>Payments</dt>
-              <dd>PayPal Sandbox â€” no live payments</dd>
+              <dd>PayPal Sandbox — no live payments</dd>
             </div>
             <div>
               <dt>Merchant execution</dt>
@@ -2788,7 +2788,7 @@ function SettingsView({ operator, model, onLogout, busy }) {
             </div>
             <div>
               <dt>AI model</dt>
-              <dd>{model.ai.model || "Local model"} â€” advisory only</dd>
+              <dd>{model.ai.model || "Local model"} — advisory only</dd>
             </div>
             <div>
               <dt>Approval</dt>
@@ -3502,7 +3502,7 @@ export default function App() {
     return [
       {
         id: investigation.paymentId ?? investigation.id ?? INVESTIGATION_ID,
-        paymentId: investigation.paymentId ?? "â€”",
+        paymentId: investigation.paymentId ?? "—",
         orderId: rowEvidence.orderId || "Not recorded",
         captureId: rowEvidence.captureId || "Not recorded",
         amount: formatAmount(rowEvidence.amount, rowEvidence.currency),
@@ -3565,12 +3565,12 @@ export default function App() {
               }`}
             >
               {isCancelPage
-                ? "â†©"
+                ? "↩"
                 : captureState === "complete"
-                  ? "âœ“"
+                  ? "✓"
                   : captureState === "error"
                     ? "!"
-                    : "â†»"}
+                    : "↻"}
             </div>
 
             <div className="eyebrow">PAYPAL SANDBOX CHECKOUT</div>
@@ -3782,7 +3782,7 @@ export default function App() {
             <span className="footer-brand">
               <Icon name="shieldcheck" size={18} />
               <strong>ResolveAI</strong>
-              <span aria-hidden="true">â€¢</span>
+              <span aria-hidden="true">•</span>
               Intelligent payment reconciliation with human oversight
             </span>
             <span>PayPal Sandbox | Local AI</span>
