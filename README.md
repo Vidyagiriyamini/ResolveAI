@@ -2,6 +2,10 @@
 
 **Smarter payments. Safer recovery.**
 
+## Trademark and Affiliation Notice
+
+ResolveAI is an independent hackathon project developed using PayPal Sandbox APIs. It is not affiliated with, endorsed by, sponsored by, or an official product of PayPal, Inc. PayPal and related marks are trademarks of PayPal, Inc.
+
 ResolveAI is an AI-assisted payment investigation and reconciliation platform built to help payment operations teams investigate discrepancies between PayPal payment evidence and merchant-side payment records.
 
 It combines verified payment evidence, deterministic discrepancy detection, AI-assisted explanations, and human-controlled simulated recovery in one operations workbench.
@@ -16,7 +20,7 @@ It combines verified payment evidence, deterministic discrepancy detection, AI-a
 - The hosted environment does not have access to the developer's local Ollama instance. AI analysis may therefore use the application's deterministic fallback.
 - Operator credentials are configured separately and are not published in this repository.
 
-For a populated demonstration, use the local application and its existing demonstration records.
+For a populated demonstration, use the local development database, which contains the developer's existing demonstration records. A fresh clone initializes its own database and does not include those records.
 
 ## Key Features
 
@@ -118,19 +122,21 @@ ResolveAI is designed around controlled payment operations:
    - Keep `PAYPAL_ENV=sandbox`.
    - For local access, retain the appropriate localhost origins in `RESOLVEAI_ALLOWED_ORIGINS`.
 
-5. For local AI inference, install Ollama and download the model:
+5. Optional configuration: `PORT` defaults to `3000`. Leave `RESOLVEAI_DB_PATH` empty to use the default database location. Leave `PAYPAL_WEBHOOK_ID` empty until you register the deployed HTTPS webhook in the PayPal Developer Dashboard.
+
+6. For local AI inference, install Ollama and download the model:
 
    ```bash
    ollama pull llama3.2
    ```
 
-6. Build the frontend:
+7. Build the frontend:
 
    ```bash
    npm run build
    ```
 
-7. Start the application:
+8. Start the application:
 
    ```bash
    npm start
